@@ -27,9 +27,9 @@
 
 #### 参考：検証済み動作環境
 
-* Mac OS 10.15(Catalina)
-* Xcode ver. 12.0
-* iPhone11 (iOS14.0)
+* Mac OS 11.6(Big Sur)
+* Xcode Version 13.0
+* iPhone X (iOS15.0.2)
   * このサンプルアプリは、実機ビルドが必要です
 
 ## プッシュ通知の仕組み
