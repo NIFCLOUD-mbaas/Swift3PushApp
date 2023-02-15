@@ -1,15 +1,21 @@
 # Uncomment the next line to define a global platform for your project
-platform :ios, '10.0'
+# platform :ios, '13.0'
 
 target 'SwiftPushApp' do
-  # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
+  # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
+  pod 'NCMB', :git => 'https://github.com/NIFCLOUD-mbaas/ncmb_swift.git'
+
 
   # Pods for SwiftPushApp
-  pod 'NCMB', :git => 'https://github.com/NIFCLOUD-mbaas/ncmb_swift.git'
-  
-  target 'SwiftPushAppUITests' do
+
+  target 'SwiftPushAppTests' do
     inherit! :search_paths
-    pod 'NCMB', :git => 'https://github.com/NIFCLOUD-mbaas/ncmb_swift.git'
+    # Pods for testing
   end
+
+  target 'SwiftPushAppUITests' do
+    # Pods for testing
+  end
+
 end

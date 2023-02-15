@@ -2,72 +2,40 @@
 //  SwiftPushAppUITests.swift
 //  SwiftPushAppUITests
 //
-//  Created by HungNV on 4/12/21.
-//  Copyright © 2021 NIFCLOUD mobile backend. All rights reserved.
+//  Created by tanaka.kokoro on 2023/02/15.
 //
 
 import XCTest
-@testable import NCMB
 
-class SwiftPushAppUITests: XCTestCase {
-    var app: XCUIApplication!
-    
-    //********** APIキーの設定 **********
-    let applicationkey = "YOUR_NCMB_APPLICATIONKEY"
-    let clientkey      = "YOUR_NCMB_CLIENTKEY"
-    
-    // MARK: - Setup for UI Test
-    override func setUp() {
+final class SwiftPushAppUITests: XCTestCase {
+
+    override func setUpWithError() throws {
+        // Put setup code here. This method is called before the invocation of each test method in the class.
+
+        // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
-        NCMB.initialize(applicationKey: applicationkey, clientKey: clientkey)
-        app = XCUIApplication()
-    }
-    
-    func testReceivedPush() throws {
-        app.launch()
-        allowPushNotificationsIfNeeded()
-        sendPush()
-        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
-        springboard.activate()
-        let notification = springboard.otherElements["Notification"].descendants(matching: .any)["NotificationShortLookView"]
-        XCTAssertEqual(waiterResultWithExpectation(notification), XCTWaiter.Result.completed)
-        notification.tap()
-        XCTAssertTrue(app.staticTexts["SwiftPushApp"].waitForExistence(timeout: 10))
-    }
-}
 
-extension SwiftPushAppUITests {
-    private func allowPushNotificationsIfNeeded() {
-        addUIInterruptionMonitor(withDescription: "Remote Authorization") { alerts -> Bool in
-            if alerts.buttons["Allow"].exists {
-                alerts.buttons["Allow"].tap()
-                return true
+        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
+    }
+
+    override func tearDownWithError() throws {
+        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    }
+
+    func testExample() throws {
+        // UI tests must launch the application that they test.
+        let app = XCUIApplication()
+        app.launch()
+
+        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    }
+
+    func testLaunchPerformance() throws {
+        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
+            // This measures how long it takes to launch your application.
+            measure(metrics: [XCTApplicationLaunchMetric()]) {
+                XCUIApplication().launch()
             }
-            return false
         }
-        app.tap()
-    }
-    
-    private func sendPush() {
-        let push: NCMBPush = NCMBPush()
-        push.title = "Test Push"
-        push.message = "プッシュ通知です"
-        push.isSendToIOS = true
-        push.setImmediateDelivery()
-        push.sendInBackground(callback: { result in
-            switch result {
-            case .success:
-                print("登録に成功しました。プッシュID: \(push.objectId!)")
-            case let .failure(error):
-                print("登録に失敗しました: \(error)")
-            }
-        })
-    }
-    
-    private func waiterResultWithExpectation(_ element: XCUIElement) -> XCTWaiter.Result {
-        let myPredicate = NSPredicate(format: "exists == true")
-        let myExpectation = XCTNSPredicateExpectation(predicate: myPredicate, object: element)
-        let result = XCTWaiter().wait(for: [myExpectation], timeout: 180)
-        return result
     }
 }

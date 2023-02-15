@@ -378,6 +378,12 @@ public class NCMBUser : NCMBBase {
                     callback(NCMBResult<Void>.success(()))
                     break
                 case let .failure(error):
+                    if let apiErr = error as? NCMBApiError {
+                        if apiErr.errorCode == .authenticationErrorByHeaderIncorrect || apiErr.errorCode == .noDataAvailable {
+                            deleteFile()
+                            _currentUser = nil
+                        }
+                    }
                     callback(NCMBResult<Void>.failure(error))
                     break
             }
@@ -591,14 +597,39 @@ public class NCMBUser : NCMBBase {
         let tmpuser = NCMBUser(className: NCMBUser.CLASSNAME, fields: fields, modifiedFieldKeys: modifiedFieldKeys)
         return tmpuser
     }
+
+    /// twitterのauthDataをもとにニフクラ mobile backendへの会員登録(ログイン)を行う
+    ///
+    /// - Parameter twitterParameters: NCMBTwitterParameters
+    /// - Parameter callback: レスポンス取得後に実行されるコールバックです。
+    public func signUpWithTwitterToken(twitterParameters: NCMBTwitterParameters, callback: @escaping NCMBHandler<Void> ) -> Void {
+            let twitterInfo: [String: Any] = [
+                twitterParameters.type.rawValue: twitterParameters.toObject()
+            ]
+            signUpWithToken(snsInfo: twitterInfo, callback: callback)
+    }
+    
+    /// facebookのauthDataをもとにニフクラ mobile backendへの会員登録(ログイン)を行う
+    ///
+    /// - Parameter facebookParameters: NCMBFacebookParameters
+    /// - Parameter callback: レスポンス取得後に実行されるコールバックです。
+    public func signUpWithFacebookToken(facebookParameters:
+        NCMBFacebookParameters, callback: @escaping NCMBHandler<Void> )
+        -> Void {
+        let facebookInfo: [String: Any] = [
+            facebookParameters.type.rawValue: facebookParameters.toObject(),
+        ]
+        signUpWithToken(snsInfo: facebookInfo, callback: callback)
+    }
     
     /// appleのauthDataをもとにニフクラ mobile backendへの会員登録(ログイン)を行う
     ///
     /// - Parameter appleParameters: NCMBAppleParameters
     /// - Parameter callback: レスポンス取得後に実行されるコールバックです。
     public func signUpWithAppleToken(appleParameters: NCMBAppleParameters, callback: @escaping NCMBHandler<Void> ) -> Void {
-        let appleInfo:NSMutableDictionary = NSMutableDictionary()
-        appleInfo.setValue(appleParameters.toObject(), forKey: appleParameters.type.rawValue)
+        let appleInfo: [String: Any] = [
+            appleParameters.type.rawValue: appleParameters.toObject(),
+        ]
         signUpWithToken(snsInfo: appleInfo, callback: callback)
     }
     
@@ -606,9 +637,9 @@ public class NCMBUser : NCMBBase {
     ///
     /// - Parameter snsInfo: snsの認証に必要なauthData
     /// - Parameter callback: レスポンス取得後に実行されるコールバックです。
-    public func signUpWithToken(snsInfo:NSMutableDictionary, callback: @escaping NCMBHandler<Void> ) -> Void {
+    public func signUpWithToken(snsInfo: [String: Any], callback: @escaping NCMBHandler<Void> ) -> Void {
         let localAuthData = self.authData
-        self.authData = snsInfo as? [String:Any]
+        self.authData = snsInfo
         if localAuthData != nil {
             let localAuthDataDictionary = NSMutableDictionary(dictionary: localAuthData!)
             localAuthDataDictionary.addEntries(from: self.authData!)
@@ -626,14 +657,37 @@ public class NCMBUser : NCMBBase {
             }
         })
     }
+
+    /// ログイン中のユーザー情報に、Twitterの認証情報を紐付ける
+    ///
+    /// - Parameter twitterParameters: NCMBTwitterParameters
+    /// - Parameter callback: レスポンス取得後に実行されるコールバックです。
+    public func linkWithTwitterToken(twitterParameters: NCMBTwitterParameters, callback: @escaping NCMBHandler<Void> ) -> Void {
+            let twitterInfo: [String: Any] = [
+                twitterParameters.type.rawValue: twitterParameters.toObject()
+            ]
+            linkWithToken(snsInfo: twitterInfo, callback: callback)
+    }
+    
+    /// ログイン中のユーザー情報に、Facebookの認証情報を紐付ける
+    ///
+    /// - Parameter FacebookParameters: NCMBFacebookParameters
+    /// - Parameter callback: レスポンス取得後に実行されるコールバックです。
+    public func linkWithFacebookToken(facebookParameters: NCMBFacebookParameters, callback: @escaping NCMBHandler<Void> ) -> Void {
+        let facebookInfo: [String: Any] = [
+            facebookParameters.type.rawValue: facebookParameters.toObject(),
+        ]
+        linkWithToken(snsInfo: facebookInfo, callback: callback)
+    }
     
     /// ログイン中のユーザー情報に、Appleの認証情報を紐付ける
     ///
     /// - Parameter appleParameters: NCMBAppleParameters
     /// - Parameter callback: レスポンス取得後に実行されるコールバックです。
     public func linkWithAppleToken(appleParameters: NCMBAppleParameters, callback: @escaping NCMBHandler<Void> ) -> Void {
-        let appleInfo:NSMutableDictionary = NSMutableDictionary()
-        appleInfo.setValue(appleParameters.toObject(), forKey: appleParameters.type.rawValue)
+        let appleInfo: [String: Any] = [
+            appleParameters.type.rawValue: appleParameters.toObject(),
+        ]
         linkWithToken(snsInfo: appleInfo, callback: callback)
     }
     
@@ -641,11 +695,11 @@ public class NCMBUser : NCMBBase {
     ///
     /// - Parameter snsInfo: NSMutableDictionary
     /// - Parameter callback: レスポンス取得後に実行されるコールバックです。
-    public func linkWithToken(snsInfo:NSMutableDictionary, callback: @escaping NCMBHandler<Void>) -> Void {
+    public func linkWithToken(snsInfo: [String: Any], callback: @escaping NCMBHandler<Void>) -> Void {
         var localAuthData: [String : Any]? = nil
         localAuthData = self.authData
         
-        self.authData = snsInfo as? [String : Any]
+        self.authData = snsInfo
         self.saveInBackground { result in
             switch result {
             case .success :
@@ -694,13 +748,14 @@ public class NCMBUser : NCMBBase {
         if self.authData != nil {
             if self.isLinkedWith(type: type) {
                 let localAuthData = self.authData
-                let localAuthDataDictionary = NSMutableDictionary(dictionary: self.authData!)
-                localAuthDataDictionary.setObject(NSNull(), forKey: type as NSCopying)
-                self.authData = localAuthDataDictionary as? [String:Any]
+                self.authData = [
+                    type: NSNull(),
+                ]
                 self.saveInBackground { result in
                     switch result {
                     case .success :
                         // processing when saving is successful
+                        self.authData?.removeValue(forKey: type)
                         callback(NCMBResult<Void>.success(()))
                     case  let .failure (error) :
                         // Process when save fails
