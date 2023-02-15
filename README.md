@@ -183,17 +183,18 @@ __[【iOS】プッシュ通知の受信に必要な証明書の作り方(開発�
   * デバイストークンの要求はiOSのバージョンによってコードが異なるため、場合分けして記述しています
 
 ```swift
-let center = UNUserNotificationCenter.current()
-center.requestAuthorization(options: [.alert, .badge, .sound]) {granted, error in
-    if error != nil {
-        // エラー時の処理
-        return
-    }
-    if granted {
-        // デバイストークンの要求
-        UIApplication.shared.registerForRemoteNotifications()
-    }
-}
+UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { (granted, error) in
+            if((error) != nil) {
+                // エラー時の処理
+                return
+            }
+            if granted {
+                // デバイストークンの要求
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
+            }
+        }
 ```
 
 * デバイストークン取得後、`didRegisterForRemoteNotificationsWithDeviceToken`メソッドが呼ばれ、取得したデバイストークンをニフクラmobile backend 上に保存しています
