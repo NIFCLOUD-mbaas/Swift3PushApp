@@ -1,12 +1,12 @@
-# 【iOS13 Swift】<br>プッシュ通知を組み込もう！
-*2016/09/27作成（2020/07/09更新）*
+# 【iOS16 Swift】<br>プッシュ通知を組み込もう！
+*2016/09/27作成（2023/02/15更新）*
 
 <center><img src="readme-img/001.png" alt="画像1" width="400px"></center>
 
 ## 概要
 * [ニフクラmobile backend](https://mbaas.nifcloud.com/)の『プッシュ通知』機能を実装したサンプルプロジェクトです
 * 簡単な操作ですぐに [ニフクラmobile backend](https://mbaas.nifcloud.com/)の機能を体験いただけます★☆
-* このサンプルはSwift5(iOS13)に対応しています
+* このサンプルはSwift5(iOS16)に対応しています
 
 ## ニフクラmobile backendとは
 スマートフォンアプリのバックエンド機能（プッシュ通知・データストア・会員管理・ファイルストア・SNS連携・位置情報検索・スクリプト）が**開発不要**、しかも基本**無料**(注1)で使えるクラウドサービス！
@@ -27,9 +27,9 @@
 
 #### 参考：検証済み動作環境
 
-* Mac OS 12.5.1 (Monterey)
-* Xcode Version 14.0
-* iPhone X (iOS 16)
+* Mac OS 13.2 (Ventura)
+* Xcode Version 14.2
+* iPhone 11 (iOS 16)
   * このサンプルアプリは、実機ビルドが必要です
 
 ## プッシュ通知の仕組み
