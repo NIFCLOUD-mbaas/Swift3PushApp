@@ -31,6 +31,7 @@
 * Xcode Version 14.2
 * iPhone 11 (iOS 16)
   * このサンプルアプリは、実機ビルドが必要です
+* Swift SDK v1.3.1
 
 ## プッシュ通知の仕組み
 * ニフクラmobile backendのプッシュ通知は、iOSが提供している通知サービスを利用しています
