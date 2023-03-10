@@ -2,7 +2,6 @@
 //  SwiftPushAppUITestsLaunchTests.swift
 //  SwiftPushAppUITests
 //
-//  Created by tanaka.kokoro on 2023/02/15.
 //
 
 import XCTest

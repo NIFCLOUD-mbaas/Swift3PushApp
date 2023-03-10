@@ -2,7 +2,6 @@
 //  SceneDelegate.swift
 //  SwiftPushApp
 //
-//  Created by tanaka.kokoro on 2023/02/15.
 //
 
 import UIKit
