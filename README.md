@@ -1,5 +1,5 @@
 # 【iOS16 Swift】<br>プッシュ通知を組み込もう！
-*2016/09/27作成（2023/02/15更新）*
+*2016/09/27作成（2023/09更新）*
 
 <center><img src="readme-img/001.png" alt="画像1" width="400px"></center>
 
@@ -27,9 +27,9 @@
 
 #### 参考：検証済み動作環境
 
-* Mac OS 13.2 (Ventura)
-* Xcode Version 14.2
-* iPhone 11 (iOS 16)
+* Mac OS 13.4.1 (Ventura)
+* Xcode Version 15
+* iPhone SE (iOS 17)
   * このサンプルアプリは、実機ビルドが必要です
 * Swift SDK v1.3.1
 
